@@ -86,3 +86,64 @@ WHERE row_num > 1;
 -- duplicate rows removed
 SELECT *
 FROM layoffs_staging2;
+
+/*
+2. Standardizing data
+- Finding issues in data and fixing it
+*/
+
+-- 2.1 remove whitespaces on the company column
+
+SELECT company, TRIM(company)
+FROM layoffs_staging2;
+
+UPDATE layoffs_staging2
+SET company = TRIM(company);
+
+SELECT *
+FROM layoffs_staging2;
+
+-- 2.2 Rename industry name that are the same but writing in a slightly different way
+-- identify industry refering to same industry but written in different formats
+
+SELECT distinct(industry)
+FROM layoffs_staging2;
+
+SELECT distinct(industry)
+FROM layoffs_staging2;
+
+UPDATE layoffs_staging2
+SET industry = 'Crypto'
+WHERE industry LIKE 'Crypto%';
+
+-- 2.3 identify country name where there is variation in spellings for same country
+SELECT distinct(country)
+FROM layoffs_staging2;
+
+-- remove . at the end of United State
+SELECT TRIM(TRAILING '.' FROM country)
+FROM layoffs_staging2;
+
+UPDATE layoffs_staging2
+SET country = TRIM(TRAILING '.' FROM country)
+WHERE country LIKE 'United States%';
+
+SELECT DISTINCT(country)
+FROM layoffs_staging2
+WHERE country like 'United States%';
+
+-- 2.4 change date column from text to date
+SELECT `date`,
+STR_TO_DATE(`date`, '%m/%d/%Y')
+FROM layoffs_staging2;
+
+UPDATE layoffs_staging2
+SET `date` = STR_TO_DATE(`date`, '%m/%d/%Y');
+
+SELECT `date`
+FROM layoffs_staging2;
+
+ALTER TABLE layoffs_staging2
+MODIFY COLUMN `date` DATE;
+
+
